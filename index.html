@@ -1,6 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+<script>
+(function(){
+  // Block context menu
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; }, true);
+  // Block common devtools / view-source shortcuts
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    var ctrl = e.ctrlKey || e.metaKey;
+    if (k === 'F12') { e.preventDefault(); return false; }
+    if (ctrl && e.shiftKey && ['I','J','C','K'].indexOf(k.toUpperCase()) >= 0) { e.preventDefault(); return false; }
+    if (ctrl && ['u','U','s','S','a','A','p','P'].indexOf(k) >= 0) { e.preventDefault(); return false; }
+  }, true);
+  // Block text selection & copy
+  document.addEventListener('selectstart', function(e){ e.preventDefault(); }, true);
+  document.addEventListener('copy', function(e){ e.preventDefault(); }, true);
+  document.addEventListener('cut', function(e){ e.preventDefault(); }, true);
+  // Block drag of images
+  document.addEventListener('dragstart', function(e){ e.preventDefault(); }, true);
+  // Add CSS to forbid selection
+  var st = document.createElement('style');
+  st.textContent = 'html,body,* { -webkit-user-select: none !important; -moz-user-select: none !important; user-select: none !important; -webkit-touch-callout: none !important; } input, textarea { -webkit-user-select: text !important; -moz-user-select: text !important; user-select: text !important; }';
+  (document.head || document.documentElement).appendChild(st);
+
+  // DevTools heuristic: large devtools panel triggers size gap
+  var warned = false;
+  function check() {
+    var th = 180;
+    var open = (window.outerWidth - window.innerWidth > th) || (window.outerHeight - window.innerHeight > th);
+    if (open && !warned) {
+      warned = true;
+      document.body.style.filter = 'blur(8px)';
+      document.body.style.pointerEvents = 'none';
+      var ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(233,229,220,0.96);display:flex;align-items:center;justify-content:center;z-index:2147483647;font-family:\'Noto Sans KR\',sans-serif;color:#2A2A26;font-size:16px;text-align:center;padding:32px;';
+      ov.innerHTML = '<div><div style="font-size:22px;font-weight:700;margin-bottom:10px;">보호된 콘텐츠</div><div>이 학습도구는 열람 전용입니다.<br/>개발자 도구를 닫고 페이지를 새로고침하세요.</div></div>';
+      document.body.appendChild(ov);
+    } else if (!open && warned) {
+      // once triggered, stay triggered (requires reload)
+    }
+  }
+  setInterval(check, 1000);
+
+  // Console warning
+  try {
+    console.log('%c경고!', 'color:#C96D5A;font-size:32px;font-weight:700;');
+    console.log('%c이 콘솔은 개발자용입니다. 여기에 코드를 붙여넣으면 보안 위험이 있을 수 있습니다.', 'font-size:14px;color:#2A2A26;');
+  } catch(e){}
+})();
+</script>
+
   <meta charset="utf-8">
   <title>낙상·욕창 위험평가 학습도구</title>
   <style>
